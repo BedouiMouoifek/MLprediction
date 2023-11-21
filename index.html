@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predictive Maintenance Web Service</title>
+</head>
+<body>
+    <h1>Predictive Maintenance Web Service</h1>
+
+    <form id="predictForm">
+        <label for="machineType">Machine Type:</label>
+        <select id="machineType">
+            <option value="Pump">Pump</option>
+            <option value="Turbine">Turbine</option>
+            <option value="Compressor">Compressor</option>
+        </select>
+
+        <label for="operatingHours">Operating Hours:</label>
+        <input type="number" id="operatingHours" min="500" max="3000">
+
+        <label for="operatingTemperature">Operating Temperature (°C):</label>
+        <input type="number" id="operatingTemperature" min="60" max="90">
+
+        <label for="operatingPressure">Operating Pressure (Psi):</label>
+        <input type="number" id="operatingPressure" min="80" max="120">
+
+        <label for="vibrationLevel">Vibration Level:</label>
+        <input type="number" id="vibrationLevel" min="0.3" max="0.7" step="0.01">
+
+        <label for="currentConsumption">Current Consumption (Amps):</label>
+        <input type="number" id="currentConsumption" min="6" max="14">
+
+        <button type="submit">Predict Failure Rate</button>
+    </form>
+
+    <div id="predictionResult"></div>
+
+    <script>
+        const predictForm = document.getElementById('predictForm');
+        const predictionResult = document.getElementById('predictionResult');
+
+        predictForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const machineType = document.getElementById('machineType').value;
+            const operatingHours = parseFloat(document.getElementById('operatingHours').value);
+            const operatingTemperature = parseFloat(document.getElementById('operatingTemperature').value);
+            const operatingPressure = parseFloat(document.getElementById('operatingPressure').value);
+            const vibrationLevel = parseFloat(document.getElementById('vibrationLevel').value);
+            const currentConsumption = parseFloat(document.getElementById('currentConsumption').value);
+
+            const data = {
+                machineType,
+                operatingHours,
+                operatingTemperature,
+                operatingPressure,
+                vibrationLevel,
+                currentConsumption
+            };
+
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const responseData = await response.json();
+            const predictedFailureRate = responseData.failureRate;
+
+            predictionResult.textContent = `Predicted Failure Rate: ${predictedFailureRate.toFixed(4)}`;
+        });
+    </script>
+</body>
+</html>
+
